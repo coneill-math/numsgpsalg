@@ -16,6 +16,9 @@ class NumericalSemigroupAlgebra:
 		return all([(i in self.semigroup) for i in element.dict()])
 	
 	def Divisors(self, element):
+		# ensure its monic
+		element = element/element.leading_coefficient()
+		
 		factorization = element.factor()
 		ret = [self.ring.one()]
 		
@@ -29,6 +32,9 @@ class NumericalSemigroupAlgebra:
 		return [divisor for divisor in ret if divisor in self and element.quo_rem(divisor)[0] in self]
 	
 	def IsIrreducible(self, element):
+		# ensure its monic
+		element = element/element.leading_coefficient()
+		
 		if element in self.__irreducibles:
 			return self.__irreducibles[element]
 		
@@ -36,6 +42,9 @@ class NumericalSemigroupAlgebra:
 		return self.__irreducibles[element]
 	
 	def Factorizations(self, element):
+		# ensure its monic
+		element = element/element.leading_coefficient()
+		
 		if element in self.__factorizations: 
 			return self.__factorizations[element]
 		
@@ -66,43 +75,7 @@ class NumericalSemigroupAlgebra:
 						self.__factorizations[element] = self.__factorizations[element] + [smallerfactors[k]]
 		
 		return self.__factorizations[element]
-	
-	
-	
-	
-	
-	
-	def __Tree(self,element,factorlist,master):
-		##############################
-		# OLD AND BROKEN, DO NOT USE #
-		##############################
-		if not factorlist:
-			if master.expand() not in self.dicty:
-				self.dicty[master.expand()]=[[master.expand()]]
-			return
-		if element==master:
-			pass
-		else:
-			if not self.__checkSemiGroup(element):
-				self.dicty[element.expand()]=[]
-			elif self.__checkSemiGroup(master/element):
-				if (master/element).expand() not in self.dicty:
-					self.__Tree(master/element,[fact[0] for fact in master/element for i in range(0,fact[1])], master/element)
-				if element.expand() not in self.dicty:
-					self.__Tree(element,factorlist,element)
-				if master.expand() not in self.dicty:
-					self.dicty[master.expand()]=[]
-				for e1 in self.dicty[element.expand()]:
-					for e2 in self.dicty[(master/element).expand()]:
-						composition=e1+e2
-						composition.sort()
-						if composition not in self.dicty[master.expand()]:
-							self.dicty[master.expand()].append(composition)
-		#else:
-		#   if element.expand() not in self.dicty:
-		#      self.__Tree(element,factorlist,element)
-		for i in set(factorlist):
-			templist=deepcopy(factorlist)
-			del templist[i]
-			self.__Tree(element/factorlist[i],templist,master)
+
+
+
 
